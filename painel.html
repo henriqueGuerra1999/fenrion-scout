@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Fenrion Scout — Painel interno</title>
+<meta name="robots" content="noindex, nofollow">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0a0a10; --card:#101119; --card-2:#0e0f16;
+    --coral:#ff5a4e; --gold:#ffb347; --orange:#ff7a30; --orange-2:#ff8a5c;
+    --white-soft:#eaeaea; --body:#c9cdd7; --muted:#99a1b1; --faint:#78828c; --divider:#28262e; --green:#4fae7c;
+  }
+  *{ box-sizing:border-box; }
+  html,body{ margin:0; background:var(--bg); color:var(--body); font-family:'Inter',sans-serif; }
+  .wrap{ max-width:960px; margin:0 auto; padding:40px 24px 90px; }
+  h1{ font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:24px; color:var(--white-soft); margin:0 0 4px; }
+  h1 span{ color:var(--orange); }
+  .sub{ font-size:12.5px; color:var(--muted); margin-bottom:30px; }
+  .card{ background:var(--card); border:1px solid var(--divider); border-radius:14px; padding:22px 24px; margin-bottom:22px; }
+  .card h2{ font-family:'Space Grotesk',sans-serif; font-size:16px; color:var(--white-soft); margin:0 0 14px; }
+  label{ display:block; font-size:12px; font-weight:600; color:var(--white-soft); margin-bottom:5px; }
+  label .opt{ font-weight:400; color:var(--faint); }
+  input[type=text], input[type=number], select{
+    width:100%; background:#0c0c13; border:1px solid var(--divider); border-radius:8px;
+    color:var(--white-soft); font-family:'Inter'; font-size:13.5px; padding:9px 11px; outline:none;
+  }
+  input:focus, select:focus{ border-color:var(--orange); }
+  .field{ margin-bottom:14px; }
+  .grid2{ display:grid; grid-template-columns:1fr 1fr; gap:12px 18px; }
+  .grid3{ display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px 18px; }
+  @media (max-width:640px){ .grid2,.grid3{ grid-template-columns:1fr; } }
+  .chips{ display:flex; flex-wrap:wrap; gap:7px; }
+  .chip{ position:relative; }
+  .chip input{ position:absolute; opacity:0; inset:0; cursor:pointer; margin:0; }
+  .chip span{ display:inline-block; padding:6px 12px; border-radius:16px; border:1px solid var(--divider); background:#0c0c13; color:var(--muted); font-size:12px; font-weight:600; cursor:pointer; user-select:none; }
+  .chip input:checked + span{ background:#3a1c10; border-color:var(--orange); color:var(--orange-2); }
+  button.btn{ font-family:'Inter'; font-weight:600; font-size:13px; border-radius:8px; padding:10px 18px; border:none; cursor:pointer; }
+  .btn-primary{ background:var(--orange); color:#1a0b02; }
+  .btn-secondary{ background:#0c0c13; border:1px solid var(--divider); color:var(--body); }
+  .btn-danger{ background:#2a1113; border:1px solid #5a2229; color:#ff8a8a; font-size:11.5px; padding:6px 10px; }
+  .status{ font-size:12.5px; margin-top:10px; padding:9px 12px; border-radius:8px; display:none; }
+  .status.show{ display:block; }
+  .status.ok{ background:#122019; color:var(--green); border:1px solid #1f4433; }
+  .status.err{ background:#221012; color:var(--coral); border:1px solid #5a2229; }
+  select#client_select{ margin-bottom:0; }
+  .profile-row{ display:flex; align-items:center; justify-content:space-between; gap:10px; padding:10px 0; border-bottom:1px solid var(--divider); }
+  .profile-row:last-child{ border-bottom:none; }
+  .profile-row .label{ font-size:13.5px; font-weight:600; color:var(--white-soft); }
+  .profile-row .meta{ font-size:11.5px; color:var(--faint); margin-top:2px; }
+  .empty{ text-align:center; padding:26px 0; color:var(--faint); font-size:13px; }
+  .match-row{ display:flex; align-items:center; gap:12px; padding:10px 0; border-bottom:1px solid var(--divider); }
+  .match-row:last-child{ border-bottom:none; }
+  .match-row .score{ font-size:12px; font-weight:700; color:var(--orange-2); background:#2a160a; border-radius:14px; padding:3px 10px; }
+  .note{ font-size:12px; color:var(--faint); line-height:1.6; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Fenrion <span>Scout</span></h1>
+  <div class="sub">Painel interno — nome de trabalho, para experimentar o formulário de critérios de compra e o motor de matching.</div>
+
+  <div class="card">
+    <h2>Stands</h2>
+    <div class="grid2">
+      <div class="field">
+        <label>ID do stand <span class="opt">(slug, ex: f2car)</span></label>
+        <input type="text" id="new_client_id" placeholder="ex: autoexemplo">
+      </div>
+      <div class="field">
+        <label>Nome</label>
+        <input type="text" id="new_client_name" placeholder="ex: Auto Exemplo Lda">
+      </div>
+    </div>
+    <button class="btn btn-primary" id="btn-create-client">Criar stand</button>
+    <div class="status" id="client-status"></div>
+
+    <div class="field" style="margin-top:20px;">
+      <label>Stand selecionado</label>
+      <select id="client_select"><option value="">A carregar…</option></select>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Novo perfil de critérios de compra</h2>
+    <div class="field">
+      <label>Etiqueta</label>
+      <input type="text" id="p_label" placeholder="ex: SUVs até 15k para revenda rápida">
+    </div>
+    <div class="grid2">
+      <div class="field"><label>Marca <span class="opt">(vazio = qualquer)</span></label><input type="text" id="p_brand"></div>
+      <div class="field"><label>Modelo <span class="opt">(vazio = qualquer)</span></label><input type="text" id="p_model"></div>
+    </div>
+    <div class="grid3">
+      <div class="field"><label>Ano mínimo</label><input type="number" id="p_year_min"></div>
+      <div class="field"><label>Ano máximo</label><input type="number" id="p_year_max"></div>
+      <div class="field"><label>Km máximo</label><input type="number" id="p_km_max"></div>
+    </div>
+    <div class="grid3">
+      <div class="field"><label>Preço mínimo (€)</label><input type="number" id="p_price_min"></div>
+      <div class="field"><label>Preço máximo (€)</label><input type="number" id="p_price_max"></div>
+      <div class="field"><label>Caixa</label>
+        <select id="p_gearbox"><option value="">Qualquer</option><option value="manual">Manual</option><option value="automatica">Automática</option></select>
+      </div>
+    </div>
+    <div class="grid2">
+      <div class="field"><label>Cilindrada mínima (cc)</label><input type="number" id="p_cc_min"></div>
+      <div class="field"><label>Cilindrada máxima (cc)</label><input type="number" id="p_cc_max"></div>
+    </div>
+    <div class="field">
+      <label>Combustível <span class="opt">(vazio = qualquer)</span></label>
+      <div class="chips" id="fuels-chips"></div>
+    </div>
+    <div class="field">
+      <label>Estado <span class="opt">(vazio = qualquer)</span></label>
+      <div class="chips" id="grades-chips"></div>
+    </div>
+    <div class="field">
+      <label>Países aceites <span class="opt">(códigos separados por vírgula, ex: DE, FR — vazio = qualquer)</span></label>
+      <input type="text" id="p_countries">
+    </div>
+    <button class="btn btn-primary" id="btn-create-profile">Guardar perfil</button>
+    <div class="status" id="profile-status"></div>
+  </div>
+
+  <div class="card">
+    <h2>Perfis ativos deste stand</h2>
+    <div id="profiles-list"><div class="empty">Seleciona um stand acima.</div></div>
+  </div>
+
+  <div class="card">
+    <h2>Leilões / matches</h2>
+    <p class="note">Ainda não há nenhuma fonte de leilão ligada — esta secção fica vazia até termos o primeiro adapter a recolher listagens reais. O botão abaixo serve só para testar o motor de matching manualmente assim que houver dados.</p>
+    <button class="btn btn-secondary" id="btn-recalc">Recalcular matches</button>
+    <div class="status" id="match-status"></div>
+    <div id="matches-list" style="margin-top:14px;"><div class="empty">Sem matches ainda.</div></div>
+  </div>
+</div>
+
+<script>
+const FUELS = ["gasolina","diesel","hibrido","eletrico","gpl"];
+const GRADES = ["sem_danos","danos_ligeiros","sinistrado"];
+let currentClient = "";
+
+function initChips(){
+  const fuelsBox = document.getElementById("fuels-chips");
+  FUELS.forEach(f => fuelsBox.insertAdjacentHTML("beforeend", `<label class="chip"><input type="checkbox" value="${f}" class="fuel-chk"><span>${f}</span></label>`));
+  const gradesBox = document.getElementById("grades-chips");
+  GRADES.forEach(g => gradesBox.insertAdjacentHTML("beforeend", `<label class="chip"><input type="checkbox" value="${g}" class="grade-chk"><span>${g.replace('_',' ')}</span></label>`));
+}
+
+function showStatus(id, msg, type){
+  const el = document.getElementById(id);
+  el.textContent = msg;
+  el.className = `status show ${type}`;
+}
+
+async function safeJson(url, opts){
+  const res = await fetch(url, opts);
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data.detail || `Erro ${res.status}`);
+  return data;
+}
+
+async function loadClients(){
+  const sel = document.getElementById("client_select");
+  try{
+    const data = await safeJson("/clientes");
+    const clientes = data.clientes || [];
+    if (!clientes.length){
+      sel.innerHTML = `<option value="">Nenhum stand criado ainda</option>`;
+      return;
+    }
+    sel.innerHTML = clientes.map(c => `<option value="${c.id}">${c.name} (${c.id})</option>`).join("");
+    currentClient = sel.value;
+    await loadProfiles();
+    await loadMatches();
+  }catch(e){
+    sel.innerHTML = `<option value="">Erro a carregar stands</option>`;
+  }
+}
+document.getElementById("client_select").addEventListener("change", async (e) => {
+  currentClient = e.target.value;
+  await loadProfiles();
+  await loadMatches();
+});
+
+document.getElementById("btn-create-client").addEventListener("click", async () => {
+  const id = document.getElementById("new_client_id").value.trim();
+  const name = document.getElementById("new_client_name").value.trim();
+  if (!id || !name){ showStatus("client-status", "Preenche o ID e o nome.", "err"); return; }
+  try{
+    await safeJson("/clientes", { method: "POST", headers: {"Content-Type":"application/json"}, body: JSON.stringify({ id, name }) });
+    showStatus("client-status", "Stand criado.", "ok");
+    document.getElementById("new_client_id").value = "";
+    document.getElementById("new_client_name").value = "";
+    await loadClients();
+  }catch(e){
+    showStatus("client-status", e.message, "err");
+  }
+});
+
+function collectProfilePayload(){
+  const num = (id) => { const v = document.getElementById(id).value; return v === "" ? null : Number(v); };
+  const countries = document.getElementById("p_countries").value.split(",").map(s => s.trim().toUpperCase()).filter(Boolean);
+  return {
+    label: document.getElementById("p_label").value.trim(),
+    brand: document.getElementById("p_brand").value.trim() || null,
+    model: document.getElementById("p_model").value.trim() || null,
+    year_min: num("p_year_min"),
+    year_max: num("p_year_max"),
+    km_max: num("p_km_max"),
+    price_min: num("p_price_min"),
+    price_max: num("p_price_max"),
+    engine_cc_min: num("p_cc_min"),
+    engine_cc_max: num("p_cc_max"),
+    gearbox: document.getElementById("p_gearbox").value || null,
+    fuels: [...document.querySelectorAll(".fuel-chk:checked")].map(el => el.value),
+    condition_grades: [...document.querySelectorAll(".grade-chk:checked")].map(el => el.value),
+    countries,
+    active: true,
+  };
+}
+
+document.getElementById("btn-create-profile").addEventListener("click", async () => {
+  if (!currentClient){ showStatus("profile-status", "Seleciona ou cria um stand primeiro.", "err"); return; }
+  const payload = collectProfilePayload();
+  if (!payload.label){ showStatus("profile-status", "Preenche a etiqueta do perfil.", "err"); return; }
+  try{
+    await safeJson(`/criterios-compra/${currentClient}`, { method: "POST", headers: {"Content-Type":"application/json"}, body: JSON.stringify(payload) });
+    showStatus("profile-status", "Perfil guardado.", "ok");
+    await loadProfiles();
+  }catch(e){
+    showStatus("profile-status", e.message, "err");
+  }
+});
+
+async function loadProfiles(){
+  const box = document.getElementById("profiles-list");
+  if (!currentClient){ box.innerHTML = `<div class="empty">Seleciona um stand acima.</div>`; return; }
+  try{
+    const data = await safeJson(`/criterios-compra/${currentClient}`);
+    const perfis = data.perfis || [];
+    if (!perfis.length){ box.innerHTML = `<div class="empty">Sem perfis ainda para este stand.</div>`; return; }
+    box.innerHTML = perfis.map(p => `
+      <div class="profile-row">
+        <div>
+          <div class="label">${p.label}</div>
+          <div class="meta">${[p.brand, p.model].filter(Boolean).join(" ") || "qualquer marca/modelo"} · até ${p.price_max ? p.price_max + '€' : 'sem limite'} · até ${p.km_max ? p.km_max + ' km' : 'sem limite'}</div>
+        </div>
+        <button class="btn btn-danger" onclick="deleteProfile(${p.id})">Apagar</button>
+      </div>
+    `).join("");
+  }catch(e){
+    box.innerHTML = `<div class="empty">Erro a carregar perfis.</div>`;
+  }
+}
+
+async function deleteProfile(id){
+  try{
+    await safeJson(`/criterios-compra/${currentClient}/${id}`, { method: "DELETE" });
+    await loadProfiles();
+  }catch(e){
+    alert(e.message);
+  }
+}
+
+document.getElementById("btn-recalc").addEventListener("click", async () => {
+  if (!currentClient){ showStatus("match-status", "Seleciona um stand primeiro.", "err"); return; }
+  try{
+    const data = await safeJson(`/leiloes/${currentClient}/recalcular`, { method: "POST" });
+    showStatus("match-status", `Avaliados ${data.matches_avaliados} matches.`, "ok");
+    await loadMatches();
+  }catch(e){
+    showStatus("match-status", e.message, "err");
+  }
+});
+
+async function loadMatches(){
+  const box = document.getElementById("matches-list");
+  if (!currentClient){ box.innerHTML = `<div class="empty">Sem matches ainda.</div>`; return; }
+  try{
+    const data = await safeJson(`/leiloes/${currentClient}`);
+    const matches = data.matches || [];
+    if (!matches.length){ box.innerHTML = `<div class="empty">Sem matches ainda.</div>`; return; }
+    box.innerHTML = matches.map(m => `
+      <div class="match-row">
+        <div class="score">${m.score ?? '—'}%</div>
+        <div>
+          <div class="label" style="font-size:13px;font-weight:600;color:var(--white-soft);">${[m.marca, m.modelo].filter(Boolean).join(" ") || "—"}</div>
+          <div class="meta" style="font-size:11.5px;color:var(--faint);">${m.perfil_label} · ${m.preco ? m.preco + (m.moeda||'') : '—'}</div>
+        </div>
+      </div>
+    `).join("");
+  }catch(e){
+    box.innerHTML = `<div class="empty">Erro a carregar matches.</div>`;
+  }
+}
+
+initChips();
+loadClients();
+</script>
+</body>
+</html>
