@@ -102,10 +102,14 @@ def match_score(listing: dict, profile: dict) -> int:
     if profile.get("price_max"):
         price = listing.get("price_current")
         # margem: preco bem abaixo do limite pontua melhor que rente ao limite
+        # (cast a float -- o Postgres devolve NUMERIC como Decimal, que nao
+        # se pode multiplicar diretamente por um float)
         if price is None:
             criterios.append(False)
         else:
-            criterios.append(price <= profile["price_max"] * 0.85 or price <= profile["price_max"])
+            price = float(price)
+            price_max = float(profile["price_max"])
+            criterios.append(price <= price_max * 0.85 or price <= price_max)
     if profile.get("fuels"):
         criterios.append(listing.get("fuel") in profile["fuels"])
     if profile.get("condition_grades"):
