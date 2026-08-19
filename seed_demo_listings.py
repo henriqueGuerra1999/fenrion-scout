@@ -45,6 +45,14 @@ VIATURAS_DEMO = [
          engine_cc=1500, fuel="diesel", gearbox="manual", condition_grade="sem_danos",
          price_current=10500, listing_url="https://exemplo-leilao.test/demo-005",
          photo_url=None, country="ES", dias_ate_fim=4),
+    dict(external_id="demo-006", brand="BMW", model="520d", year=2021, km=48000,
+         engine_cc=2000, fuel="diesel", gearbox="automatica", condition_grade="sem_danos",
+         price_current=27500, listing_url="https://exemplo-leilao.test/demo-006",
+         photo_url=None, country="DE", dias_ate_fim=2),
+    dict(external_id="demo-007", brand="Opel", model="Corsa", year=2020, km=32000,
+         engine_cc=1200, fuel="gasolina", gearbox="manual", condition_grade="sem_danos",
+         price_current=11200, listing_url="https://exemplo-leilao.test/demo-007",
+         photo_url=None, country="FR", dias_ate_fim=6),
 ]
 
 
