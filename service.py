@@ -31,6 +31,8 @@ from fastapi.responses import FileResponse
 from pydantic import BaseModel
 
 from matching import match_score, matches_profile
+from ingest import coletar_todas_as_fontes
+from seed_demo_listings import seed as seed_demo_listings
 
 app = FastAPI(title="Fenrion Scout")
 
@@ -340,3 +342,27 @@ def recalcular_matches(client_id: str):
     estiver em auction_listings, sem esperar por um cron job."""
     total = recalcular_matches_para_cliente(client_id)
     return {"ok": True, "client_id": client_id, "matches_avaliados": total}
+
+
+# ============================================================
+# Ingestao -- corre os adapters de email e atualiza listagens/matches
+# ============================================================
+# Disparo manual por agora (sem adapters registados ainda, ver
+# adapters/registry.py, isto devolve um aviso e nao faz nada). Assim que
+# houver pelo menos um adapter real, isto passa a ser chamado por um cron
+# job periodico em vez de manualmente.
+
+@app.post("/ingest/coletar")
+def ingest_coletar():
+    resumo = coletar_todas_as_fontes()
+    return resumo
+
+
+@app.post("/dev/seed-demo-listings")
+def dev_seed_demo_listings():
+    """TEMPORARIO -- insere viaturas fabricadas (fonte 'demo', claramente
+    identificada como tal) para se poder mostrar o produto antes de termos
+    qualquer integracao real ligada. Remover este endpoint (e a fonte
+    'demo') assim que houver dados reais a fluir."""
+    total = seed_demo_listings(DATABASE_URL)
+    return {"ok": True, "listagens_processadas": total}
